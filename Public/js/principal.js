@@ -1,5 +1,5 @@
 var config = {
-  type: Phaser.CANVAS,
+  type: Phaser.AUTO,
   parent: 'phaser-example',
   width: 1000,
   height: 600,
@@ -21,13 +21,15 @@ var juego = new Phaser.Game(config);
  
 function preload() {
   this.load.image('bg','images/bg.jpg')
-  this.load.image('box','images/box.jpg')      
+  this.load.image('UD','images/UD.jpg')
+  this.load.image('LR','images/LR.jpg')
 }
 var counter = 30;
 function create() {
   var self= this;
-  this.add.tileSprite(300,20,500,1000,'bg');
-  this.add.tileSprite(920,0,300,1500,'box');
+  this.add.tileSprite(0,150,2000,1500,'bg');
+  this.add.image(890,100,'LR');
+  this.add.image(890,160,'UD');
   this.socket = io();
   this.add.text(16, 530, 'Jugador 1', { fontSize: '32px', fill: '#0000FF' });
   this.add.text(570, 530, 'Jugador 2', { fontSize: '32px', fill: '#FF0000' });

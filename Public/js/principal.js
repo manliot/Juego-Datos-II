@@ -30,15 +30,15 @@ var text;
 var clr, cud, cd1, cd2, cd3, cd4;//aqui vamos a guardar el txt de las capacidades para poder moverlo
 var groupTank;
 var sw = false;//esta variable se activa si se esta moviendo una tuberia
-var cursorKeys;
+var AKey, SKey;
 function preload() {
   this.load.image('bg', 'images/bg.jpg')
   this.load.image('UD', 'images/UD.png')
   this.load.image('LR', 'images/LR.png')
   this.load.image('D1', 'images/D1.png')
-  this.load.image('D2', 'images/D2.png')
+  /*this.load.image('D2', 'images/D2.png')
   this.load.image('D3', 'images/D3.png')
-  this.load.image('D4', 'images/D4.png')
+  this.load.image('D4', 'images/D4.png')*/
   this.load.image('Tank', 'images/Tanque.png')
 }
 
@@ -54,18 +54,24 @@ function create() {
   moverSprite(d4, this, "D4");
 }
 function update() {
-  console.log("hola")
+
   //this.physics.arcade.collide(groupTank,lr);
+  //console.log(WKey);
   if (tl != null) {
 
     tl.on('pointerdown', function (pointer) {//se activa cuandola tuberia se le esta haciendo click
       sw = true;
-      /*if(cursorKeys.BACKSPACE.isDown){
-        tl.angle=90;
-      }*/
       tl.on('drag', function (pointer, dragX, dragY) {//esta funcion se activa caundo hay un arrastre en el objeto tl
+        //console.log(tl.angle);
+        if (AKey.isDown) {//cuando se press la a se volte y cuando se press la s vuelve a su forma original
+          tl.angle = 90;
+        }
+        if (SKey.isDown) {
+          tl.angle = 0;
+        }
         tl.x = dragX;
         tl.y = dragY;
+
       });
 
     });
@@ -78,7 +84,7 @@ function update() {
       }
     });
   } else {
-    console.log("null(no te awites!)");
+    //console.log("null(no te awites!)");
   }
 }
 
@@ -90,11 +96,11 @@ function correct() {
 
 
 function moverSprite(algo, ga, t) {//recibe un sprite
-  algo.on('pointerout', function (pointer) {
-    console.log("se esta paso el mause por ahi");
+  algo.on('pointerout', function (pointer) {//se activa cuando se pasa eñ ratpn por  el sprite algo 
+    //console.log("se esta paso el mause por ahi");
 
     if (pointer.isDown & !sw) {
-      tl = null;
+      tl = null;//ESTO PARA QUE CUADO SE ESTE MOVIENDO OTRA TUERIA NO SEA LA MIMA QUE L ANTERIOR
       txte = null;
       tl = ga.add.sprite(pointer.x, pointer.y, t).setInteractive({ draggable: true });
       //falta mover el texto de la capacidad
@@ -113,9 +119,9 @@ function cargaInicial(game) {
   lr = game.physics.add.sprite(890, 100, 'LR').setInteractive();
   ud = game.add.sprite(890, 180, 'UD').setInteractive();
   d1 = game.add.sprite(890, 260, 'D1').setInteractive();
-  d2 = game.add.sprite(890, 360, 'D2').setInteractive();
-  d3 = game.add.sprite(890, 440, 'D3').setInteractive();
-  d4 = game.add.sprite(890, 520, 'D4').setInteractive();
+  d2 = game.add.sprite(890, 360, 'D1').setInteractive();
+  d3 = game.add.sprite(890, 440, 'D1').setInteractive();
+  d4 = game.add.sprite(890, 520, 'D1').setInteractive();
 
   //se crea u grupo de tanques y le asignamos un cuerpo
   groupTank = game.physics.add.group();
@@ -129,9 +135,9 @@ function cargaInicial(game) {
   clr = game.add.text(880, 93, '' + capacidades[Math.floor(Math.random() * 5)], { fontSize: '16px', fill: '#0000FF' });
   cud = game.add.text(880, 173, '' + capacidades[Math.floor(Math.random() * 5)], { fontSize: '16px', fill: '#0000FF' });
   cd1 = game.add.text(873, 263, '' + capacidades[Math.floor(Math.random() * 5)], { fontSize: '16px', fill: '#0000FF' });
-  cd2 = game.add.text(873, 343, '' + capacidades[Math.floor(Math.random() * 5)], { fontSize: '16px', fill: '#0000FF' });
-  cd3 = game.add.text(885, 423, '' + capacidades[Math.floor(Math.random() * 5)], { fontSize: '16px', fill: '#0000FF' });
-  cd4 = game.add.text(885, 523, '' + capacidades[Math.floor(Math.random() * 5)], { fontSize: '16px', fill: '#0000FF' });
+  cd2 = game.add.text(873, 363, '' + capacidades[Math.floor(Math.random() * 5)], { fontSize: '16px', fill: '#0000FF' });
+  cd3 = game.add.text(873, 443, '' + capacidades[Math.floor(Math.random() * 5)], { fontSize: '16px', fill: '#0000FF' });
+  cd4 = game.add.text(873, 523, '' + capacidades[Math.floor(Math.random() * 5)], { fontSize: '16px', fill: '#0000FF' });
 
   game.socket = io();
 
@@ -144,5 +150,6 @@ function cargaInicial(game) {
   //text = this.add.text(800, 16, 'Time 00:' + counter, { font: "32px Arial", fill: "#ffffff", align: "center" });
 
   //this.physics.arcade.overlap(tl, groupTank);
-
+  AKey = game.input.keyboard.addKey('A');
+  SKey = game.input.keyboard.addKey('S');
 }

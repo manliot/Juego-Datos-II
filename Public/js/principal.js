@@ -18,7 +18,7 @@ var config = {
 };
 
 var juego = new Phaser.Game(config);
-var capacidades = [10, 20, 30, 40, 50], pos = [100, 250, 400, 550, 700];
+
 var lr, ud;
 var d1, d2, d3, d4;
 var tank1, tank2;
@@ -36,9 +36,9 @@ function preload() {
   this.load.image('UD', 'images/UD.png')
   this.load.image('LR', 'images/LR.png')
   this.load.image('D1', 'images/D1.png')
-  /*this.load.image('D2', 'images/D2.png')
+  this.load.image('D2', 'images/D2.png')
   this.load.image('D3', 'images/D3.png')
-  this.load.image('D4', 'images/D4.png')*/
+  this.load.image('D4', 'images/D4.png')
   this.load.image('Tank', 'images/Tanque.png')
 }
 
@@ -55,20 +55,15 @@ function create() {
 }
 function update() {
 
-  //this.physics.arcade.collide(groupTank,lr);
-  //console.log(WKey);
+
   if (tl != null) {
 
     tl.on('pointerdown', function (pointer) {//se activa cuandola tuberia se le esta haciendo click
       sw = true;
+
       tl.on('drag', function (pointer, dragX, dragY) {//esta funcion se activa caundo hay un arrastre en el objeto tl
         //console.log(tl.angle);
-        if (AKey.isDown) {//cuando se press la a se volte y cuando se press la s vuelve a su forma original
-          tl.angle = 90;
-        }
-        if (SKey.isDown) {
-          tl.angle = 0;
-        }
+
         tl.x = dragX;
         tl.y = dragY;
 
@@ -83,9 +78,11 @@ function update() {
         sw = false;
       }
     });
+    this.socket.emit('seMovio', tl, tl.x, tl.y, tl.angle);
   } else {
     //console.log("null(no te awites!)");
   }
+
 }
 
 function correct() {
@@ -95,11 +92,14 @@ function correct() {
 
 
 
+
 function moverSprite(algo, ga, t) {//recibe un sprite
   algo.on('pointerout', function (pointer) {//se activa cuando se pasa eñ ratpn por  el sprite algo 
-    //console.log("se esta paso el mause por ahi");
 
     if (pointer.isDown & !sw) {
+      if (tl != null) {
+        tl.destroy();
+      }
       tl = null;//ESTO PARA QUE CUADO SE ESTE MOVIENDO OTRA TUERIA NO SEA LA MIMA QUE L ANTERIOR
       txte = null;
       tl = ga.add.sprite(pointer.x, pointer.y, t).setInteractive({ draggable: true });
@@ -111,36 +111,59 @@ function moverSprite(algo, ga, t) {//recibe un sprite
 
 function cargaInicial(game) {
 
-
-
-  var counter = 30;
   game.add.tileSprite(0, 150, 2000, 1500, 'bg');
   //el .setInteractive sirve para poder mover con el rator
   lr = game.physics.add.sprite(890, 100, 'LR').setInteractive();
   ud = game.add.sprite(890, 180, 'UD').setInteractive();
   d1 = game.add.sprite(890, 260, 'D1').setInteractive();
-  d2 = game.add.sprite(890, 360, 'D1').setInteractive();
-  d3 = game.add.sprite(890, 440, 'D1').setInteractive();
-  d4 = game.add.sprite(890, 520, 'D1').setInteractive();
+  d2 = game.add.sprite(890, 360, 'D2').setInteractive();
+  d3 = game.add.sprite(890, 440, 'D3').setInteractive();
+  d4 = game.add.sprite(890, 520, 'D4').setInteractive();
+
 
   //se crea u grupo de tanques y le asignamos un cuerpo
   groupTank = game.physics.add.group();
   groupTank.enableBody = true;//esto le dice que los objetos de esta madre tiene cuerpo (algo cleve en las colisiones)
 
-  //aqui agregamos los tanks a el grupo de tanques
-  tank1 = groupTank.create(pos[Math.floor(Math.random() * 5)], 50, 'Tank');
-  tank2 = groupTank.create(pos[Math.floor(Math.random() * 5)], 450, 'Tank');
-
-  //las guardamos en variables globales para luego poder utilizarlas al momento de construir el grafo
-  clr = game.add.text(880, 93, '' + capacidades[Math.floor(Math.random() * 5)], { fontSize: '16px', fill: '#0000FF' });
-  cud = game.add.text(880, 173, '' + capacidades[Math.floor(Math.random() * 5)], { fontSize: '16px', fill: '#0000FF' });
-  cd1 = game.add.text(873, 263, '' + capacidades[Math.floor(Math.random() * 5)], { fontSize: '16px', fill: '#0000FF' });
-  cd2 = game.add.text(873, 363, '' + capacidades[Math.floor(Math.random() * 5)], { fontSize: '16px', fill: '#0000FF' });
-  cd3 = game.add.text(873, 443, '' + capacidades[Math.floor(Math.random() * 5)], { fontSize: '16px', fill: '#0000FF' });
-  cd4 = game.add.text(873, 523, '' + capacidades[Math.floor(Math.random() * 5)], { fontSize: '16px', fill: '#0000FF' });
-
   game.socket = io();
 
+  var s1, s2, s3, s4, st1, st2, sl, su;
+  game.socket.on('Capacidades', function (c1, c2, c3, c4, ct1, ct2, cl, cu) {
+    s1 = c1; s2 = c2; s3 = c3; s4 = c4; sl = cl; su = cu; st1 = ct1; st2 = ct2;
+
+    //aqui agregamos los tanks a el grupo de tanques
+    tank1 = groupTank.create(st1, 50, 'Tank');
+    tank2 = groupTank.create(st2, 450, 'Tank');
+
+    //las guardamos en variables globales para luego poder utilizarlas al momento de construir el grafo
+    clr = game.add.text(880, 93, '' + sl, { fontSize: '16px', fill: '#0000FF' });
+    cud = game.add.text(880, 173, '' + su, { fontSize: '16px', fill: '#0000FF' });
+    cd1 = game.add.text(873, 263, '' + s1, { fontSize: '16px', fill: '#0000FF' });
+    cd2 = game.add.text(873, 343, '' + s2, { fontSize: '16px', fill: '#0000FF' });
+    cd3 = game.add.text(885, 423, '' + s3, { fontSize: '16px', fill: '#0000FF' });
+    cd4 = game.add.text(885, 523, '' + s4, { fontSize: '16px', fill: '#0000FF' });
+
+  })
+
+  /*game.socket.on('currentPlayers', function (players) {
+    Object.keys(players).forEach(function (id) {
+      if (players[id].playerId === self.socket.id) {
+        addPlayer(self, players[id]);
+      } else {
+        addOtherPlayers(self, players[id]);
+      }
+    });
+  });*/
+  game.socket.on('newPlayer', function (playerInfo) {
+    addOtherPlayers(self, playerInfo);
+  });
+  game.socket.on('disconnect', function (playerId) {
+    /* self.otherPlayers.getChildren().forEach(function (otherPlayer) {
+    if (playerId === otherPlayer.playerId) {
+      otherPlayer.destroy();
+    }
+  });*/
+  });
   groupTank.enableBody = true;
   groupTank.physicsBodyType = Phaser.Physics.ARCADE;
 
@@ -149,7 +172,19 @@ function cargaInicial(game) {
   game.add.text(570, 530, 'Jugador 2', { fontSize: '32px', fill: '#FF0000' });
   //text = this.add.text(800, 16, 'Time 00:' + counter, { font: "32px Arial", fill: "#ffffff", align: "center" });
 
-  //this.physics.arcade.overlap(tl, groupTank);
+  ;
   AKey = game.input.keyboard.addKey('A');
   SKey = game.input.keyboard.addKey('S');
+
+  game.socket.on('seMovio', function (playerInfo) {
+    /*tl.destroy();
+    sw = false;
+    tl = playerInfo.tlr;
+    tl.x = playerInfo.x;
+    tl.y = playerInfo.y;
+    tl.angle = playerInfo.a;*/
+  });
+}
+function addPlayer(self, playerInfo) {
+  ///alll
 }

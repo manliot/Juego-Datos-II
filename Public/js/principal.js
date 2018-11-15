@@ -25,7 +25,7 @@ var lr, ud;
 var d1, d2, d3, d4;
 var tank1, tank2;
 
-var tl = null;//aqui se guarda el sprite que se va a mover
+var tl;//aqui se guarda el sprite que se va a mover
 var tlText;
 var txte;// esta es la capacidad de el sprite que se va a mover
 
@@ -59,7 +59,7 @@ function create() {
 }
 var tuberiaotro, Imagetu;
 function update() {
-
+  var self = this;
   //this.physics.overlap(tank1,tl,conectar(tank1,tl),null,this);
   if (tl != null) {
 
@@ -73,8 +73,9 @@ function update() {
 
       });
 
+
     });
-    this.socket.emit("memovi", tl);
+
 
     tl.on('pointerout', function (pointer) {
       //comproamos que la tuberia concuerde con otra y si no es asi entonces la destruimos
@@ -84,22 +85,11 @@ function update() {
       }
       sw = false;
     });
-
+    self.socket.emit("memovi", tl, Imagetu);
   } else {
     //console.log("null(no te awites!)");
   }
-  this.socket.on('otroMovio', function (tube, ID, pls) {
 
-    console.log(ID);
-
-    if (IDe == ID) {
-      console.log("songiuales");
-    } else {
-      tuberiaotro = tl = tub = G.add.sprite(tube.x, tube.y, Imagetu).setInteractive({ draggable: true });
-
-    }
-
-  });
 
 }
 function conectar(tank, t) {
@@ -142,6 +132,7 @@ function moverSprite(algo, ga, t, c) {//recibe un sprite
       txte = null;
       tl = tub = ga.add.sprite(pointer.x, pointer.y, t).setInteractive({ draggable: true });
 
+      console.log(tl, Imagetu);
 
       tlText = ga.add.text(pointer.x, pointer.y, '' + c, { fontSize: '16px', fill: '#0000FF' });
 
@@ -175,10 +166,24 @@ function cargaInicial(game) {
     cd1.setText(c1); cd2.setText(c2); cd3.setText(c3); cd4.setText(c4);
 
     s1 = c1; s2 = c2; s3 = c3; s4 = c4; sl = cl; su = cu; st1 = ct1; st2 = ct2;
-    console.log(game.socket.id);
+
     IDe = game.socket.id;
 
   })
+  self = game;
+  game.socket.on('otroMovio', function (tube, ID, pls) {
+ 
+    if (ID == self.socket.id) {
+      console.log(".iguales");
+    } else {
+      if (tuberiaotro != null) {
+        tuberiaotro.destroy();
+      }
+      tuberiaotro = game.add.sprite(tube.x, tube.y, pls).setInteractive({ draggable: true });
+      //console.log(".diferentes + ");
+
+    }
+  });
 
 
   //aqui agregamos los tanks a el grupo de tanques

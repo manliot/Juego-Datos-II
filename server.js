@@ -24,12 +24,14 @@ io.on('connection', function (socket) {
   players[socket.id] = {
     playerId: socket.id,
     tuberiam: null,
+    img: null
   };
 
-  socket.on('memovi', function (turu) {
+  socket.on('memovi', function (turu, imgs) {
     players[socket.id].tuberiam = turu;
-    
-    socket.broadcast.emit('otroMovio', players[socket.id].tuberiam, socket.id);
+    players[socket.id].img = imgs
+   
+    socket.broadcast.emit('otroMovio', players[socket.id].tuberiam, socket.id, imgs);
   })
 
   socket.on('disconnect', function () {

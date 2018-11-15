@@ -83,8 +83,8 @@ function update() {
 
       tl.on('drag', function (pointer, dragX, dragY) {//esta funcion se activa caundo hay un arrastre en el objeto tl
 
-        tl.x = tlText.x = dragX;
-        tl.y = tlText.y = dragY;
+        tl.x = dragX;
+        tl.y  = dragY;
 
       });
 
@@ -96,7 +96,7 @@ function update() {
       //comproamos que la tuberia concuerde con otra y si no es asi entonces la destruimos
       if (!correct(tl)) {
         tl.destroy();
-        tlText.destroy();
+       // tlText.destroy();
       } else
         if (conect2ndtank(tl)) {
           this.add.image(500, 300, 'gano');
@@ -168,7 +168,7 @@ function moverSprite(algo, ga, t, c) {//recibe un sprite
         if (tl.x > 760) {
 
           tl.destroy();
-          tlText.destroy();
+          //tlText.destroy();
         }
         temp = tl;
       }
@@ -178,7 +178,7 @@ function moverSprite(algo, ga, t, c) {//recibe un sprite
 
       console.log(tl, Imagetu);
 
-      tlText = ga.add.text(pointer.x, pointer.y, '' + c, { fontSize: '16px', fill: '#0000FF' });
+     // tlText = ga.add.text(pointer.x, pointer.y, '' + c, { fontSize: '16px', fill: '#0000FF' });
 
       sw = false;
     }
@@ -218,6 +218,7 @@ function cargaInicial(game) {
       per.destroy();
     }
   })
+  console.log(s1);
   self = game;
   game.socket.on('otroMovio', function (tube, ID, pls) {
 

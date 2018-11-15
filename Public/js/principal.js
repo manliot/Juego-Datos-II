@@ -42,13 +42,16 @@ function preload() {
   this.load.image('D3', 'images/D3.png')
   this.load.image('D4', 'images/D4.png')
   this.load.image('Tank', 'images/Tanque.png')
+  this.load.image('perdio', 'images/perder.png')
+  this.load.image('gano', 'images/ganar.png')
 }
 
-
+var tiempo2, counter = 0;
 function create() {
 
   cargaInicial(this);
-
+  temp = tank1;
+  tiempo2 = this.add.text(850, 50, 'Time 00:' + counter, { fontSize: '16px', fill: '#FFFFFF' });
   moverSprite(lr, this, "LR", sl);
   moverSprite(ud, this, "UD", su);
   moverSprite(d1, this, "D1", s2);
@@ -58,7 +61,19 @@ function create() {
 
 }
 var tuberiaotro, Imagetu;
+var per;
 function update() {
+
+  if (counter / 50 > -31) {
+    counter--;
+  } else {
+    per = this.add.sprite(500, 300, 'perdio');
+  }
+  if (counter / 50 < 10) {
+    tiempo2.setText('Time ' + Math.trunc((counter / 50) + 31));
+  } else {
+    tiempo2.setText('Time 0' + Math.trunc((counter / 50) + 31));
+  }
   var self = this;
   //this.physics.overlap(tank1,tl,conectar(tank1,tl),null,this);
   if (tl != null) {
@@ -81,8 +96,11 @@ function update() {
       //comproamos que la tuberia concuerde con otra y si no es asi entonces la destruimos
       if (!correct(tl)) {
         tl.destroy();
-
-      }
+        tlText.destroy();
+      } else
+        if (conect2ndtank(tl)) {
+          this.add.image(500, 300, 'gano');
+        }
       sw = false;
     });
     self.socket.emit("memovi", tl, Imagetu);
@@ -92,7 +110,24 @@ function update() {
 
 
 }
-function conectar(tank, t) {
+function gamerover(ga) {
+  console.log('Juego finalizado');
+  if (conect2ndtank(tl)) {
+    ga.add.sprite(500, 300, 'gano');
+  } else {
+    ga.add.sprite(500, 300, 'perdio');
+  }
+}
+function conect2ndtank(tl) {
+
+  if (tl.x + 53 > tank2.x & tl.x - 47 < tank2.x & tl.y + 55 > tank2.y) {
+
+    return true;
+
+  } else {
+
+    return false
+  }
 
 }
 function correct(tl) {
@@ -104,9 +139,18 @@ function correct(tl) {
     console.log(temp.y);
     console.log(tl.x);
     console.log(tl.y);*/
-    if (temp.x + 50 > tl.x & temp.x - 50 < tl.x & temp.y + 50 > tl.y & temp.y - 50 < tl.y) {
+    if (temp == tank1) {
+      if (temp.x + 53 > tl.x & temp.x - 47 < tl.x & temp.y + 57 > tl.y & temp.y - 52 < tl.y) {
+
+        return true;
+
+      } else {
+        return false;
+      }
+    } else if (temp.x + 53 > tl.x & temp.x - 47 < tl.x & temp.y + 49 > tl.y & temp.y - 52 < tl.y) {
 
       return true;
+
     } else {
       return false;
     }
@@ -114,7 +158,6 @@ function correct(tl) {
     return true;
   }
 }
-
 
 
 function moverSprite(algo, ga, t, c) {//recibe un sprite
@@ -125,6 +168,7 @@ function moverSprite(algo, ga, t, c) {//recibe un sprite
         if (tl.x > 760) {
 
           tl.destroy();
+          tlText.destroy();
         }
         temp = tl;
       }
@@ -164,15 +208,19 @@ function cargaInicial(game) {
     swsocket = true;
     tank1.x = ct1; tank2.x = ct2; clr.setText(cl); cud.setText(cu);
     cd1.setText(c1); cd2.setText(c2); cd3.setText(c3); cd4.setText(c4);
-
+    counter = 0;
     s1 = c1; s2 = c2; s3 = c3; s4 = c4; sl = cl; su = cu; st1 = ct1; st2 = ct2;
 
     IDe = game.socket.id;
-
+    
+    if (per != null) {
+      console.log(per);
+      per.destroy();
+    }
   })
   self = game;
   game.socket.on('otroMovio', function (tube, ID, pls) {
- 
+
     if (ID == self.socket.id) {
       console.log(".iguales");
     } else {
@@ -205,7 +253,7 @@ function cargaInicial(game) {
   //texto de los jugadores
   game.add.text(16, 530, 'Jugador 1', { fontSize: '32px', fill: '#0000FF' });
   game.add.text(570, 530, 'Jugador 2', { fontSize: '32px', fill: '#FF0000' });
-  //text = this.add.text(800, 16, 'Time 00:' + counter, { font: "32px Arial", fill: "#ffffff", align: "center" });
+
 
   ;
 

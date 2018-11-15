@@ -9,12 +9,17 @@
     <script src="/socket.io/socket.io.js"></script>
 </head>
 
-<body>
-    <div style="width: 100%; padding: 70px 400px">
-
+<body bgcolor=#00ffff>
+    <img src="images/ojm.png" border="0" width="470" height="216" left:20>
+<p style="color:#FFFFFF">
+    Arrastra las tuberías y construye el mejor camino para que no se derrame el agua
+</p>
+    <p style="color:#FFFFFF">
+    Se tiene un sumidero lleno de agua en una posición aleatoria en la parte superior de la pantalla, que después 30 segundos comienza a evacuarse. Inicialmente, el usuario debe especificar la cantidad de agua que tiene el sumidero. Posteriormente, el usuario debe constuir una tubería desde el sumidero de agua hasta un punto de desague o salida aleatorio al fondo de la pantalla. La tubería se construye escogiendo distintos tipos de tubos de 5 tipos de capacidades. Cuando pasen los 30 segundos, el agua comienza a bajar por la tubería. Usted debe diseñar un algoritmo que el agua pueda pasar por la tubería sin perderse, y adicionalmente, verificar si la cantidad de tubo utilizado, es la más óptima. 
+   </p>
+    <div style="position:absolute; text: 200px;; left:50;">
+        <div id="bloque_juego"></div>
     </div>
-    <div id="bloque_juego"></div>
-
 </body>
 
 </html>
